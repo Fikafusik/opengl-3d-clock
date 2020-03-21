@@ -1,9 +1,12 @@
+
 package com.fikafusik;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+
+import java.util.Calendar;
 
 public class ClockRenderer implements GLEventListener {
 
@@ -39,7 +42,9 @@ public class ClockRenderer implements GLEventListener {
         gl.glLineWidth(2);
 
         drawAxis(gl);
-        drawBox(gl);
+        // drawBox(gl);
+        drawRisks(gl);
+        drawClockHands(gl);
 
         gl.glPopMatrix();
     }
@@ -96,6 +101,42 @@ public class ClockRenderer implements GLEventListener {
         gl.glVertex3d(-0.5, -0.5, 1.5);
 
         gl.glEnd();
+    }
+
+    private void drawRisks(GL2 gl) {
+        gl.glPushMatrix();
+        gl.glColor3d(0.0, 0.0, 0.0);
+
+        for (int i = 0; i < 12; ++i) {
+            gl.glRotated(30, 0.0, 0.0, 1.0);
+            gl.glBegin(GL.GL_LINES);
+            gl.glVertex3d(0.0, 0.8, 0.0);
+            gl.glVertex3d(0.0, 1.0, 0.0);
+            gl.glEnd();
+        }
+
+        gl.glPopMatrix();
+    }
+
+    private void drawClockHands(GL2 gl) {
+        Calendar calendar = Calendar.getInstance();
+        int hours = calendar.get(Calendar.HOUR);
+        int minutes = calendar.get(Calendar.MINUTE);
+        int seconds = calendar.get(Calendar.SECOND);
+        System.out.println(hours);
+        System.out.println(minutes);
+        System.out.println(seconds);
+
+        gl.glPushMatrix();
+
+        gl.glRotated(-6.0 * seconds, 0.0, 0.0, 1.0);
+
+        gl.glBegin(GL.GL_LINES);
+        gl.glVertex2d(0.0, 0.0);
+        gl.glVertex2d(0.0, 1.0);
+        gl.glEnd();
+
+        gl.glPopMatrix();
     }
 
     @Override

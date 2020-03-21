@@ -1,11 +1,17 @@
 
 package com.fikafusik;
 
+import com.jogamp.opengl.GLAnimatorControl;
 import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.FPSAnimator;
 
 import javax.swing.*;
 
 public class GUI extends JFrame {
+
+    private final FPSAnimator animator;
+
     public GUI() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -14,7 +20,8 @@ public class GUI extends JFrame {
 
         GLCanvas clockCanvas = new GLCanvas();
         clockCanvas.addGLEventListener(clockRenderer);
-        clockCanvas.display();
+
+        animator = new FPSAnimator(clockCanvas, 60);
 
         JPanel panelProperties = new JPanel();
         panelProperties.setLayout(new BoxLayout(panelProperties, BoxLayout.Y_AXIS));
@@ -28,5 +35,7 @@ public class GUI extends JFrame {
 
     public void run() {
         setVisible(true);
+        animator.start();
+
     }
 }
