@@ -10,6 +10,13 @@ import java.util.Calendar;
 
 public class ClockRenderer implements GLEventListener {
 
+    private int triangulationDegree = 15;
+    private boolean needToDrawAxis = false;
+
+    public void setNeedToDrawAxis(boolean needToDrawAxis) {
+        this.needToDrawAxis = needToDrawAxis;
+    }
+
     public ClockRenderer() {
 
     }
@@ -34,14 +41,16 @@ public class ClockRenderer implements GLEventListener {
 
         gl.glPushMatrix();
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_LINE);
-        gl.glOrtho(-2, 3, -3, 2, -20, 20);
+        gl.glOrtho(-2, 2, -2, 2, -20, 20);
 
-        gl.glTranslated(0.5, -0.5, 0.0);
         gl.glRotated(20.0, 1.0, 0.0, 0.0);
-        gl.glRotated(-30.0, 0.0, 1.0, 0.0);
+        gl.glRotated(30.0, 0.0, 1.0, 0.0);
         gl.glLineWidth(2);
 
-        drawAxis(gl);
+        if (needToDrawAxis) {
+            drawAxis(gl);
+        }
+
         // drawBox(gl);
         drawRisks(gl);
         drawClockHands(gl);
@@ -50,9 +59,9 @@ public class ClockRenderer implements GLEventListener {
     }
 
     private void drawAxis(GL2 gl) {
-        double x = 2.0;
-        double y = 2.0;
-        double z = 3.0;
+        double x = 1.0;
+        double y = 1.0;
+        double z = 1.0;
 
         gl.glBegin(GL.GL_LINES);
         gl.glColor3d(0.0, 0.0, 1.0);
@@ -70,6 +79,7 @@ public class ClockRenderer implements GLEventListener {
         gl.glEnable(GL2.GL_LINE_STIPPLE);
 
         gl.glBegin(GL2.GL_LINES);
+
         gl.glColor3d(0.0f, 0.0, 1.0);
         gl.glVertex3d( 0.0, 0.0, 0.0);
         gl.glVertex3d(-x, 0.0, 0.0);
@@ -78,7 +88,8 @@ public class ClockRenderer implements GLEventListener {
         gl.glVertex3d(0.0, -y, 0.0);
         gl.glColor3d(0.0, 0.8f, 0.0);
         gl.glVertex3d(0.0, 0.0, 0.0);
-        gl.glVertex3d(0.0, 0.0, -z) ;
+        gl.glVertex3d(0.0, 0.0, -z);
+
         gl.glEnd();
 
         gl.glDisable(GL2.GL_LINE_STIPPLE);
@@ -89,28 +100,50 @@ public class ClockRenderer implements GLEventListener {
         gl.glBegin(GL2.GL_QUAD_STRIP);
 
         gl.glColor3d(0.0, 0.0, 0.0);
-        gl.glVertex3d(-0.5, 0.5, 1.5);
-        gl.glVertex3d(-0.5, -0.5, 1.5);
-        gl.glVertex3d(0.5, 0.5, 1.5);
-        gl.glVertex3d(0.5, -0.5, 1.5);
-        gl.glVertex3d(0.5,0.5, -2.5);
-        gl.glVertex3d(0.5, -0.5, -2.5);
-        gl.glVertex3d(-0.5, 0.5, -2.5);
-        gl.glVertex3d(-0.5, -0.5, -2.5);
-        gl.glVertex3d(-0.5, 0.5, 1.5);
-        gl.glVertex3d(-0.5, -0.5, 1.5);
+
+        gl.glVertex3d(-1.0, 1.0, -0.5);
+        gl.glVertex3d(-1.0, 1.0, 0.5);
+        gl.glVertex3d(-1.0, 0.0, -0.5);
+        gl.glVertex3d(-1.0, 0.0, 0.5);
+        gl.glVertex3d(1.0, 0.0, -0.5);
+        gl.glVertex3d(1.0, 0.0, 0.5);
+        gl.glVertex3d(1.0, 1.0, -0.5);
+        gl.glVertex3d(1.0, 1.0, 0.5);
 
         gl.glEnd();
+    }
+
+    private void drawTop(GL2 gl) {
+        gl.glPushMatrix();
+        gl.glBegin(GL2.GL_POLYGON);
+        gl.glColor3d(0.0, 0.0, 0.0);
+
+
+        for (int i = 0; i < triangulationDegree; ++i) {
+            gl.glBegin(GL2.GL_QUADS);
+
+
+            gl.glEnd();
+        }
+
+        gl.glVertex2d(-1.0, 1.0);
+        gl.glVertex2d(-1.0, 0.0);
+        gl.glVertex2d(1.0, 0.0);
+        gl.glVertex2d(1.0, 1.0);
+
+        gl.glEnd();
+        gl.glPopMatrix();
     }
 
     private void drawRisks(GL2 gl) {
         gl.glPushMatrix();
         gl.glColor3d(0.0, 0.0, 0.0);
+        gl.glTranslated(0.0, 0.0, 0.5);
 
         for (int i = 0; i < 12; ++i) {
             gl.glRotated(30, 0.0, 0.0, 1.0);
             gl.glBegin(GL.GL_LINES);
-            gl.glVertex3d(0.0, 0.8, 0.0);
+            gl.glVertex3d(0.0, 0.9, 0.0);
             gl.glVertex3d(0.0, 1.0, 0.0);
             gl.glEnd();
         }
@@ -118,18 +151,66 @@ public class ClockRenderer implements GLEventListener {
         gl.glPopMatrix();
     }
 
+
     private void drawClockHands(GL2 gl) {
         Calendar calendar = Calendar.getInstance();
-        int hours = calendar.get(Calendar.HOUR);
-        int minutes = calendar.get(Calendar.MINUTE);
-        int seconds = calendar.get(Calendar.SECOND);
-        System.out.println(hours);
-        System.out.println(minutes);
-        System.out.println(seconds);
+        double seconds = calendar.get(Calendar.SECOND);
+        double minutes = calendar.get(Calendar.MINUTE) + seconds / 60.0;
+        double hours = calendar.get(Calendar.HOUR) + minutes / 60.0;
 
+        gl.glPushMatrix();
+        gl.glTranslated(0.0, 0.0, 1.0);
+
+        drawHourHand(gl, hours);
+        drawMinuteHand(gl, minutes);
+        drawSecondHand(gl, seconds);
+
+        gl.glPopMatrix();
+    }
+
+    private void drawHourHand(GL2 gl, double hours) {
+        gl.glPushMatrix();
+
+        gl.glRotated(-30.0 * hours, 0.0, 0.0, 1.0);
+        gl.glTranslated(0.0, -0.1, -0.5);
+        gl.glScaled(0.9, 0.6, 1.0);
+
+        gl.glBegin(GL2.GL_POLYGON);
+        gl.glVertex2d(0.0, 0.0);
+        gl.glVertex2d(0.1, 0.1);
+        gl.glVertex2d(0.1, 0.9);
+        gl.glVertex2d(0.0, 1.0);
+        gl.glVertex2d(-0.1, 0.9);
+        gl.glVertex2d(-0.1, 0.1);
+        gl.glEnd();
+
+        gl.glPopMatrix();
+    }
+
+    private void drawMinuteHand(GL2 gl, double minutes) {
+        gl.glPushMatrix();
+
+        gl.glRotated(-6.0 * minutes, 0.0, 0.0, 1.0);
+        gl.glTranslated(0.0, -0.1, -0.5);
+        gl.glScaled(0.9, 0.8, 1.0);
+
+        gl.glBegin(GL2.GL_POLYGON);
+        gl.glVertex2d(0.0, 0.0);
+        gl.glVertex2d(0.1, 0.1);
+        gl.glVertex2d(0.1, 0.9);
+        gl.glVertex2d(0.0, 1.0);
+        gl.glVertex2d(-0.1, 0.9);
+        gl.glVertex2d(-0.1, 0.1);
+        gl.glEnd();
+
+        gl.glPopMatrix();
+    }
+
+    private void drawSecondHand(GL2 gl, double seconds) {
         gl.glPushMatrix();
 
         gl.glRotated(-6.0 * seconds, 0.0, 0.0, 1.0);
+        gl.glTranslated(0.0, -0.1, -0.5);
 
         gl.glBegin(GL.GL_LINES);
         gl.glVertex2d(0.0, 0.0);
