@@ -1,9 +1,7 @@
 
 package com.fikafusik;
 
-import com.jogamp.opengl.GLAnimatorControl;
 import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import javax.swing.*;
@@ -14,7 +12,7 @@ public class GUI extends JFrame {
 
     public GUI() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(600, 600);
 
         ClockRenderer clockRenderer = new ClockRenderer();
 
